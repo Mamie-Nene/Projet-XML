@@ -2,88 +2,87 @@ CREATE DATABASE IF NOT EXISTS dgi_db;
 USE dgi_db;
 
 
-DROP TABLE IF EXISTS Utilisateur, Classe, Etudiant, Professeur, Classe_Professeur, Cours, Examen, Prof_Classe_Cours;
+DROP TABLE IF EXISTS Classe, Utilisateur, Classe_Professeur, Cours, Examen, Prof_Classe_Cours;
 
 CREATE TABLE Classe (
-  id int(11) PRIMARY KEY AUTO_INCREMENT,
-  nom varchar(1000) NOT NULL
+  id int PRIMARY KEY AUTO_INCREMENT,
+  nom varchar(255) NOT NULL
 ) 
 
-INSERT INTO Classe (id, nom) VALUES (1, 'DIC2INFO'), (2, 'DIC2TR'), (3, 'DIC3');
+INSERT INTO Classe (id, nom) VALUES ('DIC2INFO'), ('DIC2TR'), ('DIC3');
+
+CREATE TABLE UserRole (
+  id int PRIMARY KEY AUTO_INCREMENT,
+  nomRole varchar(255) NOT NULL
+)
+
+INSERT INTO UserRole (nomRole) VALUES ('admin'), ('professeur'), ('etudiant');
 
 CREATE TABLE Utilisateur (
-  id int(11) PRIMARY KEY AUTO_INCREMENT,
-  nom varchar(1000) NOT NULL,
-  prenom varchar(155) DEFAULT NULL,
-  mail varchar(1000) NOT NULL,
-  mdp varchar(1000) NOT NULL,
-  userRole int() 
-  classe int(11)  
+  id int PRIMARY KEY AUTO_INCREMENT,
+  nom varchar(255) NOT NULL,
+  prenom varchar(255) NOT NULL,
+  mail varchar(100) NOT NULL,
+  mdp varchar(100) NOT NULL,
+  userRole int NOT NULL,
+  classe int DEFAULT NULL
 ) 
 
-INSERT INTO Utilisateur (nom,prenom,mail, mdp,userRole,classe) VALUES(1, 'IFALL' 'dgiadmin@esp.sn', 'dgiadmin');
-
- (1,'ousmane','DIENE','ousmanediene@esp.sn','passer',2), (2,'cire','DIA','ciredia@esp.sn','passer123',1),
-                            (3,'hassan','BA','hassanba@esp.sn','passer',2),(4,'mohamed','DIOP','mohameddiop@esp.sn','passer12',3);
+INSERT INTO Utilisateur (nom, prenom, mail, mdp, userRole, classe) VALUES('FALL', 'Ibrahima', 'dgiadmin@esp.sn', 'dgiadmin',1,);
+('Dallo','Mohamadou','mohamadou.diallo@esp.sn','eval001',2),
+('Fall','Ibrahima','ibrahima.fall@esp.sn','eval002',2),
+('KA','Aliou','aliou.ka@esp.sn','eval003',2,),
+('DIENE','ousmane','ousmanediene@esp.sn','passer',3,1), 
+('DIA','cire','ciredia@esp.sn','passer',3,1),
+('BA','hassan','hassanba@esp.sn','passer',3,2),
+('DIOP','mohamed','mohameddiop@esp.sn','passer',3,3);
 
 ALTER TABLE Utilisateur ADD CONSTRAINT fk_utilisateur_classe FOREIGN KEY(classe) REFERENCES Classe(id);
 
-CREATE TABLE Professeur (
-  matricule bigint(11) PRIMARY KEY AUTO_INCREMENT,
-  nom varchar(155) DEFAULT NULL,
-  prenom varchar(155) DEFAULT NULL,
-  mail varchar(100) DEFAULT NULL,
-  mdp varchar(255) DEFAULT NULL
-) 
-
-INSERT INTO Professeur VALUES (19990405001,'Dallo','Mohamadou','mohamadou.diallo@esp.sn','eval001'),
-                              (19921206002,'Fall','Ibrahima','ibrahima.fall@esp.sn','eval002'),
-                              (19780208003,'KA','Aliou','aliou.ka@esp.sn','eval003');
-
 
 CREATE TABLE Classe_Professeur (
-  id_class_prof int(11) PRIMARY KEY AUTO_INCREMENT,
-  classe_id int(11) DEFAULT NULL,
-  matricule_prof bigint(11) DEFAULT NULL
+  id_class_prof int PRIMARY KEY AUTO_INCREMENT,
+  id_classe int NOT NULL ,
+  id_prof int NOT NULL
 ) 
 
-INSERT INTO Classe_Professeur VALUES (201, 1, '19990405001'), (202, 1, '19921206002')
-                                     (203, 2, '19921206002'), (204, 2, '19780208003')
-                                     (205, 3, '19990405001'), (206, 3, '19780208003');
+INSERT INTO Classe_Professeur (id_classe, id_prof) VALUES (1, 2), (1,3 ),(2, 4 ), (2,2 ),(3,3 ), (3, 4);
 
-ALTER TABLE classe_professeur ADD CONSTRAINT fk_classe_prof_classe FOREIGN KEY (classe_id) REFERENCES Classe(id);
-ALTER TABLE classe_professeur ADD CONSTRAINT  fk_classe_prof_prof  FOREIGN KEY (matricule_prof) REFERENCES Professeur(matricule);
+ALTER TABLE classe_professeur ADD CONSTRAINT fk_classe_prof_classe FOREIGN KEY (id_classe) REFERENCES Classe(id);
+ALTER TABLE classe_professeur ADD CONSTRAINT  fk_classe_prof_prof  FOREIGN KEY (id_prof) REFERENCES Utilisateur(id);
 
 
 CREATE TABLE Cours (
-  id int(11) PRIMARY KEY AUTO_INCREMENT,
-  nom varchar(1000) NOT NULL,
+  id int PRIMARY KEY AUTO_INCREMENT,
+  nom varchar(255) NOT NULL,
   creation timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  prof bigint(11)
+  id_prof int NOT NULL
 ) 
 
-INSERT INTO Cours (nom, creation, prof) VALUES ('Algo', '2019-11-27 09:26:08',19990405001),
-                                                    ('XML', '2019-11-25 13:22:42',19921206002), 
-                                                    ('AL', '2019-12-02 09:25:36',19780208003),
-                                                    ('Droit', '2019-12-22 09:25:46',19780208003);;
-ALTER TABLE Cours ADD CONSTRAINT fk_cours_professeur FOREIGN KEY (prof) REFERENCES Professeur(matricule);
+INSERT INTO Cours (nom, creation, id_prof) VALUES ('Algo', '2019-11-27 09:26:08',2),
+                                                ('XML', '2019-11-25 13:22:42',3), 
+                                                ('AL', '2019-12-02 09:25:36',4),
+                                                ('Droit', '2019-12-22 09:25:46',4);
+ALTER TABLE Cours ADD CONSTRAINT fk_cours_professeur FOREIGN KEY (id_prof) REFERENCES Utilisateur(id);
 
 
 CREATE TABLE Examen (
-  id int(11) PRIMARY KEY AUTO_INCREMENT,
-  nom_fichier varchar(1000) DEFAULT NULL,
-  matricule_prof bigint(11) DEFAULT NULL 
+  id int PRIMARY KEY AUTO_INCREMENT,
+  nom_fichier varchar(255) DEFAULT NULL,
+  id_prof int NOT NULL 
 ) 
-ALTER TABLE Examen ADD CONSTRAINT fk_examen_professeur FOREIGN KEY (matricule_prof) REFERENCES Professeur(matricule);
+ALTER TABLE Examen ADD CONSTRAINT fk_examen_professeur FOREIGN KEY (id_prof) REFERENCES Utilisateur(id);
 
 CREATE TABLE Prof_Classe_Cours(
   id PRIMARY KEY AUTO_INCREMENT,
-  id_cours  int(11) NOT NULL,
-  matricule_prof bigint(11) NOT NULL,
-  classe_id int(11) NOT NULL
+  id_cours  int NOT NULL,
+  id_prof int NOT NULL,
+  id_classe int NOT NULL
 ) 
-INSERT INTO Prof_Classe_Cours VALUES(1001,1, '19990405001',25),(1002,2, '19921206002',25),(1003,3,'19921206002',26);
+INSERT INTO Prof_Classe_Cours (id_cours, id_prof, id_classe)VALUES(1, 2, 1),(2, 2,3),(3,3,2),(4,4,1);
 
-ALTER TABLE Prof_Classe_Cours ADD CONSTRAINT fk_Prof_Classe_Cours_classe FOREIGN KEY (class_id) REFERENCES Classe(id);
-ALTER TABLE Prof_Classe_Cours ADD CONSTRAINT fk_Prof_Classe_Cours_prof FOREIGN KEY (matricule_prof) REFERENCES Professeur(matricule);
-ALTER TABLE Prof_Classe_Cours ADD CONSTRAINT fk_Prof_Classe_Cours_cours FOREIGN KEY (cours_id) REFERENCES Cours(id);
+ALTER TABLE Prof_Classe_Cours ADD CONSTRAINT fk_Prof_Classe_Cours_cours FOREIGN KEY (id_cours_id) REFERENCES Cours(id);
+ALTER TABLE Prof_Classe_Cours ADD CONSTRAINT fk_Prof_Classe_Cours_prof FOREIGN KEY (id_prof) REFERENCES Utilisateur(id);
+ALTER TABLE Prof_Classe_Cours ADD CONSTRAINT fk_Prof_Classe_Cours_classe FOREIGN KEY (id_class) REFERENCES Classe(id);
+
+
